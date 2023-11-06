@@ -8,6 +8,7 @@ from clustering_algorithms.kmeans import apply_kmeans
 from clustering_algorithms.louvain import apply_louvain
 from data import TissuesData
 import data as data_management
+import pandas as pd
 import evaluation
 
 """
@@ -52,6 +53,12 @@ def main():
     # 5. Visualize Results
 
 
+
+
+
+
+
+
 def apply_algorithms(data, datasets, feature_type):
     kmeans_assignments = {}
     gmm_assignments = {}
@@ -63,7 +70,6 @@ def apply_algorithms(data, datasets, feature_type):
         dataset = datasets[representation][feature_type]
         test_data, test_label = data.get_testing_data(dataset, representation)
         representation_testing_data[representation] = test_data, test_label
-
         # K-means
         kmeans_assignment = apply_kmeans(test_data)
         kmeans_assignments[representation] = kmeans_assignment
@@ -73,14 +79,18 @@ def apply_algorithms(data, datasets, feature_type):
         gmm_assignments[representation] = gmm_assignment
 
         # Hierarchical Clustering
-        hc_assignment = apply_hierarchical_clustering(test_data)
+        print("For Representation: ", representation)
+        hc_assignment = apply_hierarchical_clustering(test_data, test_label)
         hierarchical_clustering_assignments[representation] = hc_assignment
+
+
 
         # Louvain
         louvain_assignment = apply_louvain(test_data)
         louvain_assignments[representation] = louvain_assignment
 
-        return representation_testing_data, kmeans_assignments, gmm_assignments, hierarchical_clustering_assignments, louvain_assignments,
+        # location of this return call is exiting the for loop after a single iteration
+        # return representation_testing_data, kmeans_assignments, gmm_assignments, hierarchical_clustering_assignments, louvain_assignments,
 
 
 def plot_data(test_data, test_label, labels):

@@ -1,7 +1,7 @@
 from scipy import sparse
 from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import MinMaxScaler
-from sknetwork.clustering import Louvain
+from sknetwork.clustering import Louvain    #search for scikit-network when trying to install
 
 """
 
