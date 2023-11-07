@@ -37,7 +37,8 @@ def main():
     pca_assignments = apply_algorithms(data, datasets, 'pca')
     # b. UMAP
     umap_assignments = apply_algorithms(data, datasets, 'umap')
-
+    print(pca_assignments)
+    print(umap_assignments)
     """ 5. Evaluate """
     for representation in data_management.representations:
         pass
@@ -65,8 +66,9 @@ def apply_algorithms(data, datasets, feature_type):
     hierarchical_clustering_assignments = {}
     louvain_assignments = {}
     representation_testing_data = {}
-
+    results = {}
     for representation in data_management.representations:
+        print("For Representation: ", representation)
         dataset = datasets[representation][feature_type]
         test_data, test_label = data.get_testing_data(dataset, representation)
         representation_testing_data[representation] = test_data, test_label
@@ -79,7 +81,6 @@ def apply_algorithms(data, datasets, feature_type):
         gmm_assignments[representation] = gmm_assignment
 
         # Hierarchical Clustering
-        print("For Representation: ", representation)
         hc_assignment = apply_hierarchical_clustering(test_data, test_label)
         hierarchical_clustering_assignments[representation] = hc_assignment
 
@@ -89,9 +90,17 @@ def apply_algorithms(data, datasets, feature_type):
         louvain_assignment = apply_louvain(test_data)
         louvain_assignments[representation] = louvain_assignment
 
+
+        results[representation] = {
+            "K-Means":kmeans_assignments,
+            "GMM": gmm_assignment,
+            "Heirarchical Clustering": hc_assignment,
+            "Louvain": louvain_assignment
+
+        }
         # location of this return call is exiting the for loop after a single iteration
         # return representation_testing_data, kmeans_assignments, gmm_assignments, hierarchical_clustering_assignments, louvain_assignments,
-
+    return results
 
 def plot_data(test_data, test_label, labels):
     traces = []

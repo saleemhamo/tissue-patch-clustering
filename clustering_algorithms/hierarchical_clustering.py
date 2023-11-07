@@ -63,13 +63,13 @@ def apply_hierarchical_clustering(test_data, test_label):
     highest_sil_score_index = silhouette_scores.index(highest_sil_score)
     s_parms = parameters[highest_sil_score_index]
 
-    print("The best v-score was: ", highest_v_score, " with parameters:")
-    print(v_parms)
-
-    print("The best silhouette-score was: ", highest_sil_score, " with parameters:")
-    print(s_parms)
-
-
+    results = {
+        "v_score": highest_v_score,
+        "v_score_params": v_parms,
+        "silhouette_score": highest_sil_score,
+        "silhouette_score_params": s_parms
+    }
+    return results
     # Access the cluster labels for each data point
     # cluster_labels = clustering.labels_
 
