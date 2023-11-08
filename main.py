@@ -54,12 +54,6 @@ def main():
     # 5. Visualize Results
 
 
-
-
-
-
-
-
 def apply_algorithms(data, datasets, feature_type):
     kmeans_assignments = {}
     gmm_assignments = {}
@@ -84,15 +78,12 @@ def apply_algorithms(data, datasets, feature_type):
         hc_assignment = apply_hierarchical_clustering(test_data, test_label)
         hierarchical_clustering_assignments[representation] = hc_assignment
 
-
-
         # Louvain
         louvain_assignment = apply_louvain(test_data)
         louvain_assignments[representation] = louvain_assignment
 
-
         results[representation] = {
-            "K-Means":kmeans_assignments,
+            "K-Means": kmeans_assignments,
             "GMM": gmm_assignment,
             "Heirarchical Clustering": hc_assignment,
             "Louvain": louvain_assignment
@@ -101,6 +92,7 @@ def apply_algorithms(data, datasets, feature_type):
         # location of this return call is exiting the for loop after a single iteration
         # return representation_testing_data, kmeans_assignments, gmm_assignments, hierarchical_clustering_assignments, louvain_assignments,
     return results
+
 
 def plot_data(test_data, test_label, labels):
     traces = []

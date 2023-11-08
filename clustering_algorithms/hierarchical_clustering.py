@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering, DBSCAN
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import silhouette_score,v_measure_score
+from sklearn.metrics import silhouette_score, v_measure_score
 import matplotlib.pyplot as plt
 
 """
@@ -30,7 +30,7 @@ def apply_hierarchical_clustering(test_data, test_label):
     parameters = []
     silhouette_scores = []
     v_scores = []
-    for i in range(2, clusters+1):
+    for i in range(2, clusters + 1):
         for metric in metrics_:
             for comp in compute_full_tree:
                 for link in linkages:
@@ -43,17 +43,12 @@ def apply_hierarchical_clustering(test_data, test_label):
                         labels_ = clustering.fit_predict(test_data)
                         score = silhouette_score(test_data, labels_)
                         v_measure = v_measure_score(test_label, labels_)
-                        parameters.append([i,metric,comp,link])
+                        parameters.append([i, metric, comp, link])
                         silhouette_scores.append(score)
                         v_scores.append(v_measure)
 
                     except:
                         pass
-
-
-
-
-
 
     highest_v_score = max(v_scores)
     highest_v_score_index = v_scores.index(highest_v_score)
