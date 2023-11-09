@@ -7,6 +7,7 @@ from clustering_algorithms.hierarchical_clustering import apply_hierarchical_clu
 from clustering_algorithms.kmeans import apply_kmeans
 from clustering_algorithms.louvain import apply_louvain
 from data import TissuesData
+import matplotlib.pyplot as plt
 import data as data_management
 import pandas as pd
 import evaluation
@@ -52,6 +53,68 @@ def main():
     #               'Louvain': [louvain_silhouette, louvain_v_measure]}).set_index('Metrics')
 
     # 5. Visualize Results
+
+def plot_results(results):
+
+    v_scores = []
+    sil_scores = []
+    for rep in results['pca']:
+        for model in results['pca'][rep]:
+            v_scores.append(results['pca'][rep]['v_score'])
+            sil_scores.append(results['pca'][rep]['silhouette_score'])
+
+    x_points = np.arange(len(v_scores))
+    #Create and show figure comparting the v score and sil score for PCA
+    plt.figure(1)
+    bar_width = 0.2
+    plt.bar(x_points, v_scores, color='blue', width=bar_width)
+    plt.bar(x_points + bar_width, sil_scores, color='red', width=bar_width)
+    plt.show()
+
+    #Create and show figure comparting the v score and sil score for UMAP
+
+    v_scores = []
+    sil_scores = []
+    for rep in results['umap']:
+        for model in results['umap'][rep]:
+            v_scores.append(results['umap'][rep]['v_score'])
+            sil_scores.append(results['umap'][rep]['silhouette_score'])
+
+    x_points = np.arange(len(v_scores))
+
+    plt.figure(2)
+    plt.bar()
+    plt.bar()
+    plt.show()
+
+    # dict = {
+    #     "PCA":{
+    #         "pge": {
+    #             "KMeans":{
+    #
+    #             },
+    #             "GMM": {
+    #             },
+    #             "Heirarchical":{
+    #                 "v_score": double value,
+    #                 "v_score_params": list,
+    #                 "silhouette_score": double value,
+    #                 "silhouette_score_params": list
+    #             },
+    #             "Louvain":{
+    #
+    #             }
+    #         },
+    #         "resnet50":{
+    #         },
+    #         "inceptionv3": {
+    #         },
+    #         "vgg16": {
+    #         }
+    #     },
+    #     "UMAP":{
+    #     }
+    # }
 
 
 def apply_algorithms(data, datasets, feature_type):
