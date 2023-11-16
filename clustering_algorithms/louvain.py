@@ -36,6 +36,7 @@ def apply_louvain(test_data, test_label):
 
                 except:
                     pass
+        res += 0.1
 
     highest_v_score = max(v_scores)
     highest_v_score_index = v_scores.index(highest_v_score)

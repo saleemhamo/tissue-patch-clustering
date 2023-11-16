@@ -130,11 +130,11 @@ def apply_algorithms(data, datasets, feature_type):
         test_data, test_label = data.get_testing_data(dataset, representation)
         representation_testing_data[representation] = test_data, test_label
         # K-means
-        kmeans_assignment = apply_kmeans(test_data)
+        kmeans_assignment = apply_kmeans(test_data, test_label)
         kmeans_assignments[representation] = kmeans_assignment
 
         # GMM
-        gmm_assignment = apply_gmm(test_data)
+        gmm_assignment = apply_gmm(test_data, test_label)
         gmm_assignments[representation] = gmm_assignment
 
         # Hierarchical Clustering

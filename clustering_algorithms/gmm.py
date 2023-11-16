@@ -1,4 +1,6 @@
 from sklearn.mixture import GaussianMixture
+from sklearn.metrics import silhouette_score, v_measure_score
+
 
 """
 import h5py
@@ -65,11 +67,66 @@ visualize_clusters(resnet50_umap_data, resnet50_umap_labels, 'ResNet50 UMAP Clus
 """
 
 
-def apply_gmm(test_data, n_clusters=9, random_state=0):
-    # Fit a Gaussian Mixture Model to the test_data
-    gmm = GaussianMixture(n_components=n_clusters, random_state=random_state)
-    gmm.fit(test_data)
+def apply_gmm(test_data, test_label):
+    parameters = []
+    silhouette_scores = []
+    v_scores = []
 
-    # Predict cluster assignments for the data
-    gmm_assignments = gmm.predict(test_data)
-    return gmm_assignments
+    # components = range from 1 to 20
+    covariance = ['full', 'tied', 'diag', 'spherical']
+    tol = 0.0001    #float from 0.0001 to 0.01
+    reg_covar = 0.0000001 #float from 0.0000001 to 0.00001
+    # max_iter = range from 50 to 200
+    # n_init = range from 1 to 10
+    init_params = ['kmeans', 'k-means++', 'random', 'random_from_data']
+    random_state = 0
+    warm_start = [True, False]
+    # verbose_interval = range from 1 to 20
+    for component in range(1,20):
+        for cov in covariance:
+            while tol < 0.01:
+                while reg_covar < 0.00001:
+                    for max_iter in range(50,200):
+                        for n_init in range(1,20):
+                            for param in init_params:
+                                for state in warm_start:
+                                    for verbose_interval in range(1,20):
+                                        try:
+                                            clustering = GaussianMixture(
+                                                n_components=component,
+                                                covariance_type=cov,
+                                                tol=tol,
+                                                reg_covar=reg_covar,
+                                                max_iter=max_iter,
+                                                n_init=n_init,
+                                                init_params=param,
+                                                random_state=random_state,
+                                                warm_start=state,
+                                                verbose_interval=verbose_interval
+                                            )
+                                            labels_ = clustering.fit_predict(test_data)
+                                            score = silhouette_score(test_data, labels_)
+                                            v_measure = v_measure_score(test_label, labels_)
+                                            parameters.append([cov, tol, reg_covar, max_iter, n_init, param, random_state, state, verbose_interval])
+                                            silhouette_scores.append(score)
+                                            v_scores.append(v_measure)
+                                        except:
+                                            pass
+                    reg_covar += 0.0000001
+                tol += 0.0001
+
+    highest_v_score = max(v_scores)
+    highest_v_score_index = v_scores.index(highest_v_score)
+    v_parms = parameters[highest_v_score_index]
+
+    highest_sil_score = max(silhouette_scores)
+    highest_sil_score_index = silhouette_scores.index(highest_sil_score)
+    s_parms = parameters[highest_sil_score_index]
+
+    results = {
+        "v_score": highest_v_score,
+        "v_score_params": v_parms,
+        "silhouette_score": highest_sil_score,
+        "silhouette_score_params": s_parms
+    }
+    return results
