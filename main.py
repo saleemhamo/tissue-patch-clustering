@@ -142,7 +142,7 @@ def apply_algorithms(data, datasets, feature_type):
         hierarchical_clustering_assignments[representation] = hc_assignment
 
         # Louvain
-        louvain_assignment = apply_louvain(test_data)
+        louvain_assignment = apply_louvain(test_data, test_label)
         louvain_assignments[representation] = louvain_assignment
 
         results[representation] = {
