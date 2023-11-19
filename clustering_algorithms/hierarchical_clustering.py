@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 
 def apply_hierarchical_clustering(test_data, test_label):
+    print("DBScan")
     # You have been given sampled test data of 200x 100 item vector --> brought down from 5000x100
     # As well as the associated labels for those pieces of data
     clusters = len(np.unique(test_label))

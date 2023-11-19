@@ -1,68 +1,76 @@
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score, v_measure_score
-
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import f1_score, silhouette_score, v_measure_score
+from sklearn.model_selection import train_test_split, cross_val_score
 
 def apply_kmeans(test_data, test_label):
+    print("Kmeans")
+    k = 9
+    X_train, X_test, y_train, y_test = train_test_split(test_data, test_label, test_size=.1, random_state=4)
+    kmeans = KMeans(n_clusters=k, random_state=42, n_init='auto')
+    kmeans.fit(X_train)
+    pred = kmeans.predict(X_test)
+    v_score = v_measure_score(y_test, pred)
+    sil_score = silhouette_score(X_test, y_test)
 
-    initializer = ['k-means++', 'random']
-    # clusters: range from 1 to 20
-    # n_init 'auto'
-    # max_iter int between 1 and 999
-    tol = 0.00001 # tol float between 0 and 0.001
 
-    # verbose int --> pretty much a random seed = 0
-    # random_state = 0
-    copy_x = [True, False]
-    algorithm = 'lloyd'
-    verbose = 0
-    random_state = 0
-    n_init = 'auto'
-    parameters = []
-    silhouette_scores = []
-    v_scores = []
 
-    for cluster in range(1,20):
-        for iterations in range(150, 400):
-            while tol < 0.001:
-                for copy in copy_x:
-                    for init in initializer:
-                        try:
-                            clustering = KMeans(
-                                init=init,
-                                n_clusters=cluster,
-                                n_init=n_init,
-                                max_iter=iterations,
-                                tol=tol,
-                                verbose=verbose,
-                                random_state=random_state,
-                                copy_x=copy,
-                                algorithm=algorithm
-                            )
-                            labels_ = clustering.fit_predict(test_data)
-                            score = silhouette_score(test_data, labels_)
-                            v_measure = v_measure_score(test_label, labels_)
 
-                            parameters.append([init, cluster, n_init, iterations,tol, verbose, random_state])
+    # cv_scores = []
+    # v_scores = []
+    # f1_scores = []  # Perhaps not to be considered
+    # silhouette_scores = []
+    #
+    # # Testing for different cluster values
+    # k_values = list(range(1, 41))
+    # for k in k_values:
+    #     X_train, X_test, y_train, y_test = train_test_split(test_data, test_label, test_size=.1, random_state=4)
+    #
+    #     kmeans = KMeans(n_clusters=k, random_state=42)
+    #     kmeans.fit(X_train)
+    #     y_pred = kmeans.predict(X_test)
+    #
+    #     # Deplying k-nearest neighbors classifier
+    #     # knn = KNeighborsClassifier(n_neighbors=k)
+    #     # knn.fit(X_train, y_train)
+    #     # y_pred_knn = knn.predict(X_test)
+    #
+    #
+    #     # Calculating the validation scores. Notice that the number of folds can be increased if required
+    #     # cv_score = np.mean(cross_val_score(kmeans, test_data, test_label, cv=7))
+    #     v_score = v_measure_score(y_test, y_pred)
+    #     # f1 = f1_score(test_label, y_pred_knn)
+    #     silhouette = silhouette_score(X_test, y_pred)
+    #
+    #     # Appending the scores to the previous list
+    #     # cv_scores.append(cv_score)
+    #     v_scores.append(v_score)
+    #     # f1_scores.append(f1)
+    #     silhouette_scores.append(silhouette)
 
-                            silhouette_scores.append(score)
-                            v_scores.append(v_measure)
 
-                        except:
-                            pass
-                tol += 0.00001
 
-    highest_v_score = max(v_scores)
-    highest_v_score_index = v_scores.index(highest_v_score)
-    v_parms = parameters[highest_v_score_index]
+    # best_k = k_values[np.argmax(cv_scores)]
+    # print(f'The best k value is {best_k}.')
 
-    highest_sil_score = max(silhouette_scores)
-    highest_sil_score_index = silhouette_scores.index(highest_sil_score)
-    s_parms = parameters[highest_sil_score_index]
+
+    # highest_v_score = max(v_scores)
+    v_parms = [k]
+
+    # highest_sil_score = max(silhouette_scores)
+    # highest_sil_score_index = silhouette_scores.index(highest_sil_score)
+    s_parms = [k]
 
     results = {
-        "v_score": highest_v_score,
+        "v_score": v_score,
         "v_score_params": v_parms,
-        "silhouette_score": highest_sil_score,
+        "silhouette_score": sil_score,
         "silhouette_score_params": s_parms
     }
+    print('done KMeans')
     return results

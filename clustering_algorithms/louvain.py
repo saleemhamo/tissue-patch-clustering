@@ -11,6 +11,7 @@ from sklearn.metrics import silhouette_score, v_measure_score
 
 
 def apply_louvain(test_data, test_label):
+    print("Louvain")
     res = 0.1
     modularity_options = ['Dugue', 'Newman', 'Potts']
     verbosity = [True, False]

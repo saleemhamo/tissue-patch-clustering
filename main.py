@@ -131,22 +131,22 @@ def apply_algorithms(data, datasets, feature_type):
         representation_testing_data[representation] = test_data, test_label
         # K-means
         kmeans_assignment = apply_kmeans(test_data, test_label)
-        kmeans_assignments[representation] = kmeans_assignment
+        # kmeans_assignments[representation] = kmeans_assignment
 
         # GMM
         gmm_assignment = apply_gmm(test_data, test_label)
-        gmm_assignments[representation] = gmm_assignment
+        # gmm_assignments[representation] = gmm_assignment
 
         # Hierarchical Clustering
         hc_assignment = apply_hierarchical_clustering(test_data, test_label)
-        hierarchical_clustering_assignments[representation] = hc_assignment
+        # hierarchical_clustering_assignments[representation] = hc_assignment
 
         # Louvain
         louvain_assignment = apply_louvain(test_data, test_label)
-        louvain_assignments[representation] = louvain_assignment
+        # louvain_assignments[representation] = louvain_assignment
 
         results[representation] = {
-            "K-Means": kmeans_assignments,
+            "K-Means": kmeans_assignment,
             "GMM": gmm_assignment,
             "Heirarchical Clustering": hc_assignment,
             "Louvain": louvain_assignment

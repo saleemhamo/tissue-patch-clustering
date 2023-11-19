@@ -68,52 +68,39 @@ visualize_clusters(resnet50_umap_data, resnet50_umap_labels, 'ResNet50 UMAP Clus
 
 
 def apply_gmm(test_data, test_label):
+    print("GMM")
     parameters = []
     silhouette_scores = []
     v_scores = []
 
     # components = range from 1 to 20
     covariance = ['full', 'tied', 'diag', 'spherical']
-    tol = 0.0001    #float from 0.0001 to 0.01
-    reg_covar = 0.0000001 #float from 0.0000001 to 0.00001
     # max_iter = range from 50 to 200
     # n_init = range from 1 to 10
     init_params = ['kmeans', 'k-means++', 'random', 'random_from_data']
     random_state = 0
     warm_start = [True, False]
     # verbose_interval = range from 1 to 20
-    for component in range(1,20):
+    for component in range(1,10):
         for cov in covariance:
-            while tol < 0.01:
-                while reg_covar < 0.00001:
-                    for max_iter in range(50,200):
-                        for n_init in range(1,20):
-                            for param in init_params:
-                                for state in warm_start:
-                                    for verbose_interval in range(1,20):
-                                        try:
-                                            clustering = GaussianMixture(
-                                                n_components=component,
-                                                covariance_type=cov,
-                                                tol=tol,
-                                                reg_covar=reg_covar,
-                                                max_iter=max_iter,
-                                                n_init=n_init,
-                                                init_params=param,
-                                                random_state=random_state,
-                                                warm_start=state,
-                                                verbose_interval=verbose_interval
-                                            )
-                                            labels_ = clustering.fit_predict(test_data)
-                                            score = silhouette_score(test_data, labels_)
-                                            v_measure = v_measure_score(test_label, labels_)
-                                            parameters.append([cov, tol, reg_covar, max_iter, n_init, param, random_state, state, verbose_interval])
-                                            silhouette_scores.append(score)
-                                            v_scores.append(v_measure)
-                                        except:
-                                            pass
-                    reg_covar += 0.0000001
-                tol += 0.0001
+            for param in init_params:
+                for state in warm_start:
+                    try:
+                        clustering = GaussianMixture(
+                            n_components=component,
+                            covariance_type=cov,
+                            init_params=param,
+                            random_state=random_state,
+                            warm_start=state,
+                        )
+                        labels_ = clustering.fit_predict(test_data)
+                        score = silhouette_score(test_data, labels_)
+                        v_measure = v_measure_score(test_label, labels_)
+                        parameters.append([cov, param, random_state, state])
+                        silhouette_scores.append(score)
+                        v_scores.append(v_measure)
+                    except:
+                        pass
 
     highest_v_score = max(v_scores)
     highest_v_score_index = v_scores.index(highest_v_score)
@@ -129,4 +116,5 @@ def apply_gmm(test_data, test_label):
         "silhouette_score": highest_sil_score,
         "silhouette_score_params": s_parms
     }
+    print("Done GMM")
     return results
