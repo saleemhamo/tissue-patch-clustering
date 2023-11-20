@@ -24,28 +24,28 @@ def apply_hierarchical_clustering(test_data, test_label):
     v_scores = []
     db_scores = []
     ch_scores = []
-    for i in range(2, clusters + 1):
-        for metric in metrics_:
-            for comp in compute_full_tree:
-                for link in linkages:
-                    # some combinations of parameters return an error, the try except skips those combinations
-                    try:
-                        clustering = AgglomerativeClustering(
-                            n_clusters=i,
-                            metric=metric,
-                            compute_full_tree=comp,
-                            linkage=link)
-                        pred_labels = clustering.fit_predict(test_data)
+    i = 9
+    for metric in metrics_:
+        for comp in compute_full_tree:
+            for link in linkages:
+                # some combinations of parameters return an error, the try except skips those combinations
+                try:
+                    clustering = AgglomerativeClustering(
+                        n_clusters=i,
+                        metric=metric,
+                        compute_full_tree=comp,
+                        linkage=link)
+                    pred_labels = clustering.fit_predict(test_data)
 
-                        # calls performance metrics from evaluation.py
-                        parameters.append([i, metric, comp, link])
-                        db_scores.append(evaluation.find_davies_bouldin_score(test_data, pred_labels))
-                        silhouette_scores.append(evaluation.silhouette_score(test_data, pred_labels))
-                        v_scores.append(evaluation.v_measure_score(test_label, pred_labels))
-                        ch_scores.append(evaluation.find_calinski_harabasz_score(test_data, pred_labels))
+                    # calls performance metrics from evaluation.py
+                    parameters.append([i, metric, comp, link])
+                    db_scores.append(evaluation.find_davies_bouldin_score(test_data, pred_labels))
+                    silhouette_scores.append(evaluation.silhouette_score(test_data, pred_labels))
+                    v_scores.append(evaluation.v_measure_score(test_label, pred_labels))
+                    ch_scores.append(evaluation.find_calinski_harabasz_score(test_data, pred_labels))
 
-                    except:
-                        pass
+                except:
+                    pass
 
     v_score_and_params = evaluation.best_params(v_scores, parameters)
     sil_scores_and_params = evaluation.best_params(silhouette_scores, parameters)

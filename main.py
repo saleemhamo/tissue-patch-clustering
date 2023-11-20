@@ -1,6 +1,8 @@
 import numpy as np
 import plotly.graph_objects as go
-
+from sknetwork.clustering import Louvain
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.mixture import GaussianMixture
 from clustering_algorithms.gmm import apply_gmm
 from clustering_algorithms.hierarchical_clustering import apply_hierarchical_clustering
 from clustering_algorithms.kmeans import apply_kmeans
@@ -8,13 +10,13 @@ from clustering_algorithms.louvain import apply_louvain
 from data import TissuesData
 import matplotlib.pyplot as plt
 import data as data_management
+from sklearn.metrics import silhouette_score, v_measure_score, davies_bouldin_score, calinski_harabasz_score
 
 
 """
     Data Representation (representations): 'pge', 'resnet50', 'inceptionv3', 'vgg16'
     Feature types (feature_types):  'pca', 'umap'
 """
-
 
 def main():
     """ 1. Load dataset """
@@ -32,88 +34,87 @@ def main():
     # hierarchical_clustering_assignments
     # louvain_assignments
 
-    # a. PCA
-    pca_assignments = apply_algorithms(data, datasets, 'pca')
-    # b. UMAP
-    umap_assignments = apply_algorithms(data, datasets, 'umap')
-    print(pca_assignments)
-    print(umap_assignments)
+    # # a. PCA
+    # pca_assignments = apply_algorithms(data, datasets, 'pca')
+    # # b. UMAP
+    # umap_assignments = apply_algorithms(data, datasets, 'umap')
+    # print(pca_assignments)
+    # print(umap_assignments)
+
+
+
     """ 5. Evaluate """
-    for representation in data_management.representations:
-        pass
-        # pca_assignments
+    v_score_params = [9, 'spherical', 'random', 0, True] # GMM umap vgg16
+    sil_score_params = [9, 'euclidean', 'auto', 'complete'] # Heirarchical CLustering, UMAP, resnet50
+    db_score_params = [2.3000000000000007, True, 'Potts'] #Louvain, UMAP, resnet50
+    ch_score_params = [9, 'euclidean', 'auto', 'ward'] # Heirarchical Clustering, UMAP, vgg16
 
-    # kmeans_counts = np.unique(assignment, return_counts=True)
-    # print('Number of clusters from KMeans: %d, Presentation: %s' % (np.unique(assignment).shape[0], presentation))
-    # kmeans_silhouette = evaluation.find_silhouette_score(test_data, assignment)
-    # kmeans_v_measure = evaluation.find_v_measure(test_label, assignment)
-    # pd.DataFrame({'Metrics': ['silhouette', 'V-measure'], 'Kmeans': [kmeans_silhouette, kmeans_v_measure],
-    #               'Louvain': [louvain_silhouette, louvain_v_measure]}).set_index('Metrics')
+    v_dataset = datasets['vgg16']['umap']
+    sil_dataset = datasets['resnet50']['umap']
+    db_dataset = datasets['resnet50']['umap']
+    ch_dataset = datasets['vgg16']['umap']
 
-    # 5. Visualize Results
+    # model and scores for the best v_score from the testing which is GMM with Umap and vgg16
+    test_data, test_label = data.get_testing_data(v_dataset, 'vgg16')
+    clustering = GaussianMixture(
+                        n_components=v_score_params[0],
+                        covariance_type=v_score_params[1],
+                        init_params=v_score_params[2],
+                        random_state=v_score_params[3],
+                        warm_start=v_score_params[4],
+                    )
+    pred_labels = clustering.fit_predict(test_data)
+    vgg_gmm_scores = [v_measure_score(test_label, pred_labels), silhouette_score(test_data, pred_labels),davies_bouldin_score(test_data, pred_labels),calinski_harabasz_score(test_data, pred_labels)]
 
-def plot_results(results):
+    # model and scores for the best v_score from the testing which is Heirarchical Clusterig with Umap and resnet50
+    test_data, test_label = data.get_testing_data(sil_dataset, 'resnet50')
+    clustering = AgglomerativeClustering(
+                        n_clusters=sil_score_params[0],
+                        metric=sil_score_params[1],
+                        compute_full_tree=sil_score_params[2],
+                        linkage=sil_score_params[3])
+    pred_labels = clustering.fit_predict(test_data)
+    resnet_hc_scores = [v_measure_score(test_label, pred_labels), silhouette_score(test_data, pred_labels),davies_bouldin_score(test_data, pred_labels),calinski_harabasz_score(test_data, pred_labels)]
 
-    v_scores = []
-    sil_scores = []
-    for rep in results['pca']:
-        for model in results['pca'][rep]:
-            v_scores.append(results['pca'][rep]['v_score'])
-            sil_scores.append(results['pca'][rep]['silhouette_score'])
+    test_data, test_label = data.get_testing_data(db_dataset, 'resnet50')
+    clustering = Louvain(
+                        resolution=db_score_params[0],
+                        modularity=db_score_params[2],
+                        verbose=db_score_params[1],
+                        random_state=0)
+    pred_labels = clustering.fit_predict(test_data)
+    resnet_louv_scores = [v_measure_score(test_label, pred_labels), silhouette_score(test_data, pred_labels),davies_bouldin_score(test_data, pred_labels),calinski_harabasz_score(test_data, pred_labels)]
 
-    x_points = np.arange(len(v_scores))
-    #Create and show figure comparting the v score and sil score for PCA
-    plt.figure(1)
-    bar_width = 0.2
-    plt.bar(x_points, v_scores, color='blue', width=bar_width)
-    plt.bar(x_points + bar_width, sil_scores, color='red', width=bar_width)
+    test_data, test_label = data.get_testing_data(ch_dataset, 'vgg16')
+    clustering = AgglomerativeClustering(
+                        n_clusters=ch_score_params[0],
+                        metric=ch_score_params[1],
+                        compute_full_tree=ch_score_params[2],
+                        linkage=ch_score_params[3])
+    pred_labels = clustering.fit_predict(test_data)
+    vgg_hc_scores = [v_measure_score(test_label, pred_labels), silhouette_score(test_data, pred_labels),davies_bouldin_score(test_data, pred_labels),calinski_harabasz_score(test_data, pred_labels)]
+    plot_results(vgg_gmm_scores, resnet_hc_scores, resnet_louv_scores,vgg_hc_scores)
+def plot_results(score1, score2, score3, score4):
+    # function inputs are 4 lists of scoress in the order of vscore, sil score, daview bouldin, calsinski harabsz
+    x_axis = ['V_score', 'Silhouette Score', 'Daview Bouldin', 'Calinski Harabasz']
+    # X_axis = np.arange(len(x_axis[-1]))
+    X_axis = np.arange(1)
+    width= 0.2
+
+    plt.bar(X_axis, score1[-1], color='r', width=width, label = 'GMM with vgg16')
+    plt.bar(X_axis+0.2, score2[-1], color='b', width=width, label = 'Heirarchical with resnet50')
+    plt.bar(X_axis+0.4, score3[-1], color='g', width=width, label = 'Louvain with resnet50')
+    plt.bar(X_axis+0.6, score4[-1], color='y', width=width, label = 'Heirarchical with vgg16')
+
+    plt.title("Score comparisons for the best model combinations")
+    # plt.xticks(X_axis+0.3, x_axis[-1])
+    plt.xlabel('Calinski Harabasz')
+    plt.legend()
     plt.show()
-
-    #Create and show figure comparting the v score and sil score for UMAP
-
-    v_scores = []
-    sil_scores = []
-    for rep in results['umap']:
-        for model in results['umap'][rep]:
-            v_scores.append(results['umap'][rep]['v_score'])
-            sil_scores.append(results['umap'][rep]['silhouette_score'])
-
-    x_points = np.arange(len(v_scores))
-
-    plt.figure(2)
-    plt.bar()
-    plt.bar()
-    plt.show()
-
-    # dict = {
-    #     "PCA":{
-    #         "pge": {
-    #             "KMeans":{
-    #
-    #             },
-    #             "GMM": {
-    #             },
-    #             "Heirarchical":{
-    #                 "v_score": double value,
-    #                 "v_score_params": list,
-    #                 "silhouette_score": double value,
-    #                 "silhouette_score_params": list
-    #             },
-    #             "Louvain":{
-    #
-    #             }
-    #         },
-    #         "resnet50":{
-    #         },
-    #         "inceptionv3": {
-    #         },
-    #         "vgg16": {
-    #         }
-    #     },
-    #     "UMAP":{
-    #     }
-    # }
-
+    # print(score1)
+    # print(score2)
+    # print(score3)
+    # print(score4)
 
 def apply_algorithms(data, datasets, feature_type):
     kmeans_assignments = {}

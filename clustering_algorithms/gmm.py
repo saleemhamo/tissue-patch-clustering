@@ -72,30 +72,29 @@ def apply_gmm(test_data, test_label):
     init_params = ['kmeans', 'k-means++', 'random', 'random_from_data']
     random_state = 0
     warm_start = [True, False]
+    component = 9
+    for cov in covariance:
+        for param in init_params:
+            for state in warm_start:
+                try:
+                    clustering = GaussianMixture(
+                        n_components=component,
+                        covariance_type=cov,
+                        init_params=param,
+                        random_state=random_state,
+                        warm_start=state,
+                    )
+                    pred_labels = clustering.fit_predict(test_data)
 
-    for component in range(1,20):
-        for cov in covariance:
-            for param in init_params:
-                for state in warm_start:
-                    try:
-                        clustering = GaussianMixture(
-                            n_components=component,
-                            covariance_type=cov,
-                            init_params=param,
-                            random_state=random_state,
-                            warm_start=state,
-                        )
-                        pred_labels = clustering.fit_predict(test_data)
+                    db_scores.append(evaluation.find_davies_bouldin_score(test_data, pred_labels))
+                    silhouette_scores.append(evaluation.silhouette_score(test_data, pred_labels))
+                    v_scores.append(evaluation.v_measure_score(test_label, pred_labels))
+                    ch_scores.append(evaluation.find_calinski_harabasz_score(test_data, pred_labels))
 
-                        db_scores.append(evaluation.find_davies_bouldin_score(test_data, pred_labels))
-                        silhouette_scores.append(evaluation.silhouette_score(test_data, pred_labels))
-                        v_scores.append(evaluation.v_measure_score(test_label, pred_labels))
-                        ch_scores.append(evaluation.find_calinski_harabasz_score(test_data, pred_labels))
+                    parameters.append([component, cov, param, random_state, state])
 
-                        parameters.append([cov, param, random_state, state])
-
-                    except:
-                        pass
+                except:
+                    pass
 
     v_score_and_params = evaluation.best_params(v_scores, parameters)
     sil_scores_and_params = evaluation.best_params(silhouette_scores, parameters)

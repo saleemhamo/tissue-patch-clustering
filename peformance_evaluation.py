@@ -1,186 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
-# obtained results from the main function
-pca_results ={
-    'pge': {
-        'K-Means': {
-            'v_score': 0.6826505172352025,
-            'v_score_params': [9],
-            'silhouette_score': -0.035054848,
-            'silhouette_score_params': [9]},
-        'GMM': {
-            'v_score': 0.4702720476867322,
-            'v_score_params': ['diag', 'kmeans', 0, True],
-            'silhouette_score': 0.30364215,
-            'silhouette_score_params': ['tied', 'kmeans', 0, True]},
-        'Heirarchical Clustering': {
-            'v_score': 0.46616190044482375,
-            'v_score_params': [9, 'euclidean', 'auto', 'ward'],
-            'silhouette_score': 0.28470385,
-            'silhouette_score_params': [2, 'euclidean', 'auto', 'complete']},
-        'Louvain': {
-            'v_score': 0.4350045123514932,
-            'v_score_params': [2.600000000000001, True, 'Potts'],
-            'silhouette_score': 0.05663969,
-            'silhouette_score_params': [0.7999999999999999, True, 'Potts']}},
-    'resnet50': {
-        'K-Means': {
-            'v_score': 0.7500909068577803,
-            'v_score_params': [9],
-            'silhouette_score': 0.007592828,
-            'silhouette_score_params': [9]},
-        'GMM': {
-            'v_score': 0.6675953521472837,
-            'v_score_params': ['spherical', 'random', 0, True],
-            'silhouette_score': 0.2047506,
-            'silhouette_score_params': ['spherical', 'random_from_data', 0, True]},
-        'Heirarchical Clustering': {
-            'v_score': 0.639339896282885,
-            'v_score_params': [9, 'euclidean', 'auto', 'average'],
-            'silhouette_score': 0.20420735,
-            'silhouette_score_params': [2, 'euclidean', 'auto', 'ward']},
-        'Louvain': {
-            'v_score': 0.4944893121401915,
-            'v_score_params': [0.1, True, 'Potts'],
-            'silhouette_score': 0.10731749,
-            'silhouette_score_params': [0.1, True, 'Potts']}},
-    'inceptionv3': {
-        'K-Means': {
-            'v_score': 0.752416535484372,
-            'v_score_params': [9],
-            'silhouette_score': 0.048548847,
-            'silhouette_score_params': [9]},
-        'GMM': {
-            'v_score': 0.4248974374495107,
-            'v_score_params': ['full', 'k-means++', 0, True],
-            'silhouette_score': 0.37663648,
-            'silhouette_score_params': ['full', 'kmeans', 0, True]},
-        'Heirarchical Clustering': {
-            'v_score': 0.42490356770037496,
-            'v_score_params': [9, 'euclidean', 'auto', 'ward'],
-            'silhouette_score': 0.36288834,
-            'silhouette_score_params': [2, 'euclidean', 'auto', 'average']},
-        'Louvain': {
-            'v_score': 0.36728298745034776,
-            'v_score_params': [9.499999999999982, True, 'Potts'],
-            'silhouette_score': 0.1285057,
-            'silhouette_score_params': [0.1, True, 'Potts']}},
-    'vgg16': {
-        'K-Means': {
-            'v_score': 0.7269327379223158,
-            'v_score_params': [9],
-            'silhouette_score': -0.01882117,
-            'silhouette_score_params': [9]},
-        'GMM': {
-            'v_score': 0.6339790932128929,
-            'v_score_params': ['spherical', 'kmeans', 0, True],
-            'silhouette_score': 0.16628581,
-            'silhouette_score_params': ['spherical', 'kmeans', 0, True]},
-        'Heirarchical Clustering': {
-            'v_score': 0.6676550171740204,
-            'v_score_params': [9, 'cosine', 'auto', 'average'],
-            'silhouette_score': 0.22889076,
-            'silhouette_score_params': [2, 'euclidean', 'auto', 'average']},
-        'Louvain': {
-            'v_score': 0.3660129055169312,
-            'v_score_params': [6.999999999999991, True, 'Potts'],
-            'silhouette_score': 0.040425558,
-            'silhouette_score_params': [0.4, True, 'Potts']
-            }
-        }
-    }
-umap_results = {
-    'pge': {
-        'K-Means': {
-            'v_score': 0.7572559550069933,
-            'v_score_params': [9],
-            'silhouette_score': 0.033522338,
-            'silhouette_score_params': [9]},
-        'GMM': {
-            'v_score': 0.640946088882115,
-            'v_score_params': ['diag', 'kmeans', 0, True],
-            'silhouette_score': 0.570827,
-            'silhouette_score_params': ['diag', 'kmeans', 0, True]},
-        'Heirarchical Clustering': {
-            'v_score': 0.6302927057081651,
-            'v_score_params': [9, 'euclidean', 'auto', 'complete'],
-            'silhouette_score': 0.6238832,
-            'silhouette_score_params': [7, 'euclidean', 'auto', 'complete']},
-        'Louvain': {
-            'v_score': 0.5779432496877341,
-            'v_score_params': [2.0000000000000004, True, 'Potts'],
-            'silhouette_score': 0.33050743,
-            'silhouette_score_params': [0.9999999999999999, True, 'Dugue']}},
-    'resnet50': {
-        'K-Means': {
-            'v_score': 0.7216244421368441,
-            'v_score_params': [9],
-            'silhouette_score': 0.13158932,
-            'silhouette_score_params': [9]},
-        'GMM': {
-            'v_score': 0.7528840520914104,
-            'v_score_params': ['spherical', 'k-means++', 0, True],
-            'silhouette_score': 0.5984592,
-            'silhouette_score_params': ['diag', 'kmeans', 0, True]},
-        'Heirarchical Clustering': {
-            'v_score': 0.7533025948800598,
-            'v_score_params': [6, 'euclidean', 'auto', 'ward'],
-            'silhouette_score': 0.6522304,
-            'silhouette_score_params': [9, 'euclidean', 'auto', 'complete']},
-        'Louvain': {
-            'v_score': 0.6811819800787234,
-            'v_score_params': [1.0999999999999999, True, 'Dugue'],
-            'silhouette_score': 0.3597288,
-            'silhouette_score_params': [1.0999999999999999, True, 'Dugue']}},
-    'inceptionv3': {
-        'K-Means': {
-            'v_score': 0.7142118131503213,
-            'v_score_params': [9],
-            'silhouette_score': 0.13774829,
-            'silhouette_score_params': [9]},
-        'GMM': {
-            'v_score': 0.496598109530028,
-            'v_score_params': ['diag', 'kmeans', 0, True],
-            'silhouette_score': 0.5439961,
-            'silhouette_score_params': ['spherical', 'kmeans', 0, True]},
-        'Heirarchical Clustering': {
-            'v_score': 0.501971320933409,
-            'v_score_params': [9, 'l1', 'auto', 'average'],
-            'silhouette_score': 0.61594373,
-            'silhouette_score_params': [2, 'euclidean', 'auto', 'ward']},
-        'Louvain': {
-            'v_score': 0.5757867657184093,
-            'v_score_params': [2.0000000000000004, True, 'Potts'],
-            'silhouette_score': 0.22622566,
-            'silhouette_score_params': [0.9999999999999999, True, 'Dugue']}},
-    'vgg16': {
-        'K-Means': {
-            'v_score': 0.8605238040025479,
-            'v_score_params': [9],
-            'silhouette_score': 0.2909466,
-            'silhouette_score_params': [9]},
-        'GMM': {
-            'v_score': 0.7663097905718953,
-            'v_score_params': ['spherical', 'random', 0, True],
-            'silhouette_score': 0.6989255,
-            'silhouette_score_params': ['full', 'kmeans', 0, True]},
-        'Heirarchical Clustering': {
-            'v_score': 0.7371828668056379,
-            'v_score_params': [8, 'euclidean', 'auto', 'ward'],
-            'silhouette_score': 0.6989255,
-            'silhouette_score_params': [5, 'euclidean', 'auto', 'complete']},
-        'Louvain': {
-            'v_score': 0.6057236202811282,
-            'v_score_params': [1.4000000000000001, True, 'Dugue'],
-            'silhouette_score': 0.34213462,
-            'silhouette_score_params': [0.9999999999999999, True, 'Dugue']
-            }
-        }
-    }
 
 # plots the scores for each model and preprocessing method against each other on a bar chart
-def plot_results(results, key, representation):
+def print_plot(df, key, representation):
     models = ['K-Means', 'GMM', 'Heirarchical Clustering', 'Louvain']
 
     X_axis = np.arange(len(models))
@@ -194,20 +18,16 @@ def plot_results(results, key, representation):
     vgg_score = []
 
     # compare models against eachother for representaiton
-    for rep in results:
-      v_scores = []
-      s_scores = []
-      for alg in results[rep]:
-        if rep == 'pge':
-          pge_score.append(results[rep][alg][key])
-        elif rep == 'resnet50':
-          res_score.append(results[rep][alg][key])
-        elif rep == 'inceptionv3':
-          inc_score.append(results[rep][alg][key])
-        elif rep == 'vgg16':
-          vgg_score.append(results[rep][alg][key])
-
-
+    for col in df:
+        for row in df[col]:
+            if col == 'pge':
+                pge_score.append(row[key])
+            elif col == 'resnet50':
+                res_score.append(row[key])
+            elif col == 'inceptionv3':
+                inc_score.append(row[key])
+            elif col == 'vgg16':
+                vgg_score.append(row[key])
 
     plt.bar(X_axis, pge_score, color='r', width=width, label = 'pge')
     plt.bar(X_axis+0.2, res_score, color='b', width=width, label = 'resnet50')
@@ -220,8 +40,21 @@ def plot_results(results, key, representation):
     plt.show()
 
 
+def plots():
+    keys = ['v_score', 'silhouette_score', 'davies_bouldin_score', 'calinski_harabasz_score']
+    represenation = ['PCA', 'UMAP']
+    for rep in represenation:
+        for key in keys:
+            if rep == 'PCA':
+                print_plot(pca_df, key, rep)
+            elif rep == 'UMAP':
+                print_plot(umap_df, key, rep)
 
-plot_results(pca_results, 'v_score', 'PCA')
-plot_results(pca_results, 'v_score', 'UMAP')
-plot_results(umap_results, 'silhouette_score', 'PCA')
-plot_results(umap_results, 'silhouette_score', 'UMAP')
+
+# obtained results from the main function
+pca_results ={'pge': {'K-Means': {'v_score': 0.40841497018165535, 'v_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'silhouette_score': 0.1411712, 'silhouette_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'davies_bouldin_score': 1.8810450543664667, 'davies_bouldin_params': [9, 42, 'auto', 'random', False, 'elkan'], 'calinski_harabasz_score': 31.03296012729442, 'calinski_harabasz_params': [9, 42, 'auto', 'random', True, 'lloyd']}, 'GMM': {'v_score': 0.5182577834882977, 'v_score_params': ['spherical', 'k-means++', 0, True], 'silhouette_score': 0.30364215, 'silhouette_score_params': ['tied', 'kmeans', 0, True], 'davies_bouldin_score': 1.126468330513548, 'davies_bouldin_params': ['tied', 'k-means++', 0, True], 'calinski_harabasz_score': 94.21133113291833, 'calinski_harabasz_params': ['full', 'kmeans', 0, True]}, 'Heirarchical Clustering': {'v_score': 0.46616190044482375, 'v_score_params': [9, 'euclidean', 'auto', 'ward'], 'silhouette_score': 0.28470385, 'silhouette_score_params': [2, 'euclidean', 'auto', 'complete'], 'davies_bouldin_score': 0.5803587787129462, 'davies_bouldin_params': [3, 'euclidean', 'auto', 'single'], 'calinski_harabasz_score': 86.44315346875858, 'calinski_harabasz_params': [2, 'euclidean', 'auto', 'ward']}, 'Louvain': {'v_score': 0.4350045123514932, 'v_score_params': [2.600000000000001, True, 'Potts'], 'silhouette_score': 0.05663969, 'silhouette_score_params': [0.7999999999999999, True, 'Potts'], 'davies_bouldin_score': 2.031180110696742, 'davies_bouldin_params': [3.700000000000002, True, 'Potts'], 'calinski_harabasz_score': 21.164632038925607, 'calinski_harabasz_params': [0.7999999999999999, True, 'Potts']}}, 'resnet50': {'K-Means': {'v_score': 0.6150319163527722, 'v_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'silhouette_score': 0.17064774, 'silhouette_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'davies_bouldin_score': 1.8738797534984641, 'davies_bouldin_params': [9, 42, 'auto', 'k-means++', False, 'lloyd'], 'calinski_harabasz_score': 24.570309028821693, 'calinski_harabasz_params': [9, 42, 'auto', 'random', True, 'lloyd']}, 'GMM': {'v_score': 0.6675953521472837, 'v_score_params': ['spherical', 'random', 0, True], 'silhouette_score': 0.2047506, 'silhouette_score_params': ['spherical', 'random_from_data', 0, True], 'davies_bouldin_score': 1.4559059134802257, 'davies_bouldin_params': ['spherical', 'random_from_data', 0, True], 'calinski_harabasz_score': 33.646207449806234, 'calinski_harabasz_params': ['spherical', 'random_from_data', 0, True]}, 'Heirarchical Clustering': {'v_score': 0.639339896282885, 'v_score_params': [9, 'euclidean', 'auto', 'average'], 'silhouette_score': 0.20420735, 'silhouette_score_params': [2, 'euclidean', 'auto', 'ward'], 'davies_bouldin_score': 0.7371571084434247, 'davies_bouldin_params': [2, 'l1', 'auto', 'single'], 'calinski_harabasz_score': 32.07048467816038, 'calinski_harabasz_params': [2, 'cosine', 'auto', 'average']}, 'Louvain': {'v_score': 0.4944893121401915, 'v_score_params': [0.1, True, 'Potts'], 'silhouette_score': 0.10731751, 'silhouette_score_params': [0.1, True, 'Potts'], 'davies_bouldin_score': 2.506148131202275, 'davies_bouldin_params': [0.1, True, 'Potts'], 'calinski_harabasz_score': 17.82523369112498, 'calinski_harabasz_params': [0.1, True, 'Potts']}}, 'inceptionv3': {'K-Means': {'v_score': 0.4083744079214288, 'v_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'silhouette_score': 0.23345646, 'silhouette_score_params': [9, 42, 'auto', 'k-means++', True, 'lloyd'], 'davies_bouldin_score': 1.430775869553194, 'davies_bouldin_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'calinski_harabasz_score': 60.74625126017162, 'calinski_harabasz_params': [9, 42, 'auto', 'random', True, 'lloyd']}, 'GMM': {'v_score': 0.4971397863213234, 'v_score_params': ['spherical', 'kmeans', 0, True], 'silhouette_score': 0.37663648, 'silhouette_score_params': ['full', 'kmeans', 0, True], 'davies_bouldin_score': 1.0299939052113687, 'davies_bouldin_params': ['diag', 'kmeans', 0, True], 'calinski_harabasz_score': 109.13640776734624, 'calinski_harabasz_params': ['full', 'kmeans', 0, True]}, 'Heirarchical Clustering': {'v_score': 0.42490356770037496, 'v_score_params': [9, 'euclidean', 'auto', 'ward'], 'silhouette_score': 0.36288834, 'silhouette_score_params': [2, 'euclidean', 'auto', 'average'], 'davies_bouldin_score': 0.8334410605159756, 'davies_bouldin_params': [3, 'euclidean', 'auto', 'single'], 'calinski_harabasz_score': 105.09237760441893, 'calinski_harabasz_params': [2, 'euclidean', 'auto', 'average']}, 'Louvain': {'v_score': 0.36728298745034776, 'v_score_params': [9.499999999999982, True, 'Potts'], 'silhouette_score': 0.12850572, 'silhouette_score_params': [0.1, True, 'Potts'], 'davies_bouldin_score': 2.0403023024506277, 'davies_bouldin_params': [9.499999999999982, True, 'Potts'], 'calinski_harabasz_score': 38.078949646664285, 'calinski_harabasz_params': [0.4, True, 'Potts']}}, 'vgg16': {'K-Means': {'v_score': 0.6351383884375129, 'v_score_params': [9, 42, 'auto', 'k-means++', True, 'lloyd'], 'silhouette_score': 0.1285225, 'silhouette_score_params': [9, 42, 'auto', 'k-means++', True, 'lloyd'], 'davies_bouldin_score': 2.0535105532816265, 'davies_bouldin_params': [9, 42, 'auto', 'random', False, 'elkan'], 'calinski_harabasz_score': 20.024945045289286, 'calinski_harabasz_params': [9, 42, 'auto', 'random', True, 'lloyd']}, 'GMM': {'v_score': 0.6339790932128929, 'v_score_params': ['spherical', 'kmeans', 0, True], 'silhouette_score': 0.16628581, 'silhouette_score_params': ['spherical', 'kmeans', 0, True], 'davies_bouldin_score': 1.395808025012612, 'davies_bouldin_params': ['tied', 'k-means++', 0, True], 'calinski_harabasz_score': 31.11614196593033, 'calinski_harabasz_params': ['spherical', 'kmeans', 0, True]}, 'Heirarchical Clustering': {'v_score': 0.6676550171740204, 'v_score_params': [9, 'cosine', 'auto', 'average'], 'silhouette_score': 0.22889076, 'silhouette_score_params': [2, 'euclidean', 'auto', 'average'], 'davies_bouldin_score': 0.6350888032929198, 'davies_bouldin_params': [2, 'l1', 'auto', 'average'], 'calinski_harabasz_score': 27.651199149708017, 'calinski_harabasz_params': [3, 'cosine', 'auto', 'average']}, 'Louvain': {'v_score': 0.3660129055169312, 'v_score_params': [6.999999999999991, True, 'Potts'], 'silhouette_score': 0.040425558, 'silhouette_score_params': [0.4, True, 'Potts'], 'davies_bouldin_score': 2.5631484911774813, 'davies_bouldin_params': [1.7000000000000004, True, 'Potts'], 'calinski_harabasz_score': 11.263074099255867, 'calinski_harabasz_params': [0.4, True, 'Potts']}}}
+umap_results = {'pge': {'K-Means': {'v_score': 0.6409460888821152, 'v_score_params': [9, 42, 'auto', 'k-means++', True, 'lloyd'], 'silhouette_score': 0.5713722, 'silhouette_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'davies_bouldin_score': 0.5276971100503096, 'davies_bouldin_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'calinski_harabasz_score': 439.5113109520567, 'calinski_harabasz_params': [9, 42, 'auto', 'random', True, 'lloyd']}, 'GMM': {'v_score': 0.6791185721861306, 'v_score_params': ['full', 'kmeans', 0, True], 'silhouette_score': 0.6028694, 'silhouette_score_params': ['spherical', 'kmeans', 0, True], 'davies_bouldin_score': 0.4703362331488116, 'davies_bouldin_params': ['full', 'kmeans', 0, True], 'calinski_harabasz_score': 730.31916536234, 'calinski_harabasz_params': ['full', 'kmeans', 0, True]}, 'Heirarchical Clustering': {'v_score': 0.6302927057081651, 'v_score_params': [9, 'euclidean', 'auto', 'complete'], 'silhouette_score': 0.6238832, 'silhouette_score_params': [7, 'euclidean', 'auto', 'complete'], 'davies_bouldin_score': 0.4218751194872549, 'davies_bouldin_params': [7, 'euclidean', 'auto', 'complete'], 'calinski_harabasz_score': 444.44734763165695, 'calinski_harabasz_params': [9, 'euclidean', 'auto', 'ward']}, 'Louvain': {'v_score': 0.5779432496877341, 'v_score_params': [2.0000000000000004, True, 'Potts'], 'silhouette_score': 0.33050743, 'silhouette_score_params': [0.9999999999999999, True, 'Dugue'], 'davies_bouldin_score': 0.6038089834709416, 'davies_bouldin_params': [2.1000000000000005, True, 'Potts'], 'calinski_harabasz_score': 79.54891584483154, 'calinski_harabasz_params': [2.1000000000000005, True, 'Potts']}}, 'resnet50': {'K-Means': {'v_score': 0.7247516367818793, 'v_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'silhouette_score': 0.57415485, 'silhouette_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'davies_bouldin_score': 0.583920087042975, 'davies_bouldin_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'calinski_harabasz_score': 225.02945986470647, 'calinski_harabasz_params': [9, 42, 'auto', 'random', True, 'lloyd']}, 'GMM': {'v_score': 0.7528840520914104, 'v_score_params': ['spherical', 'k-means++', 0, True], 'silhouette_score': 0.6129229, 'silhouette_score_params': ['full', 'kmeans', 0, True], 'davies_bouldin_score': 0.46878653223205147, 'davies_bouldin_params': ['spherical', 'k-means++', 0, True], 'calinski_harabasz_score': 532.0561283211081, 'calinski_harabasz_params': ['full', 'kmeans', 0, True]}, 'Heirarchical Clustering': {'v_score': 0.7533025948800598, 'v_score_params': [6, 'euclidean', 'auto', 'ward'], 'silhouette_score': 0.6522304, 'silhouette_score_params': [9, 'euclidean', 'auto', 'complete'], 'davies_bouldin_score': 0.37253290609146256, 'davies_bouldin_params': [9, 'l1', 'auto', 'average'], 'calinski_harabasz_score': 222.4584857651121, 'calinski_harabasz_params': [9, 'euclidean', 'auto', 'ward']}, 'Louvain': {'v_score': 0.6811819800787234, 'v_score_params': [1.0999999999999999, True, 'Dugue'], 'silhouette_score': 0.3597288, 'silhouette_score_params': [1.0999999999999999, True, 'Dugue'], 'davies_bouldin_score': 0.09408291154885919, 'davies_bouldin_params': [2.3000000000000007, True, 'Potts'], 'calinski_harabasz_score': 81.94869431453576, 'calinski_harabasz_params': [2.3000000000000007, True, 'Potts']}}, 'inceptionv3': {'K-Means': {'v_score': 0.4662851920529249, 'v_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'silhouette_score': 0.48600483, 'silhouette_score_params': [9, 42, 'auto', 'k-means++', True, 'lloyd'], 'davies_bouldin_score': 0.6516952320682252, 'davies_bouldin_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'calinski_harabasz_score': 395.6050789559162, 'calinski_harabasz_params': [9, 42, 'auto', 'k-means++', False, 'lloyd']}, 'GMM': {'v_score': 0.49805185803555413, 'v_score_params': ['diag', 'kmeans', 0, True], 'silhouette_score': 0.5439961, 'silhouette_score_params': ['spherical', 'kmeans', 0, True], 'davies_bouldin_score': 0.5712960832031684, 'davies_bouldin_params': ['spherical', 'k-means++', 0, True], 'calinski_harabasz_score': 490.6492395105698, 'calinski_harabasz_params': ['full', 'kmeans', 0, True]}, 'Heirarchical Clustering': {'v_score': 0.501971320933409, 'v_score_params': [9, 'l1', 'auto', 'average'], 'silhouette_score': 0.61594373, 'silhouette_score_params': [2, 'euclidean', 'auto', 'ward'], 'davies_bouldin_score': 0.4110657958258208, 'davies_bouldin_params': [2, 'euclidean', 'auto', 'ward'], 'calinski_harabasz_score': 394.67395698168446, 'calinski_harabasz_params': [7, 'cosine', 'auto', 'complete']}, 'Louvain': {'v_score': 0.5757867657184093, 'v_score_params': [2.0000000000000004, True, 'Potts'], 'silhouette_score': 0.22622566, 'silhouette_score_params': [0.9999999999999999, True, 'Dugue'], 'davies_bouldin_score': 1.097764037322555, 'davies_bouldin_params': [0.9999999999999999, True, 'Dugue'], 'calinski_harabasz_score': 75.3390835245902, 'calinski_harabasz_params': [0.9999999999999999, True, 'Dugue']}}, 'vgg16': {'K-Means': {'v_score': 0.7117910241144453, 'v_score_params': [9, 42, 'auto', 'random', True, 'lloyd'], 'silhouette_score': 0.5582743, 'silhouette_score_params': [9, 42, 'auto', 'k-means++', True, 'lloyd'], 'davies_bouldin_score': 0.5950810240002947, 'davies_bouldin_params': [9, 42, 'auto', 'k-means++', True, 'lloyd'], 'calinski_harabasz_score': 621.2232676301627, 'calinski_harabasz_params': [9, 42, 'auto', 'random', True, 'lloyd']}, 'GMM': {'v_score': 0.7663097905718953, 'v_score_params': ['spherical', 'random', 0, True], 'silhouette_score': 0.6989255, 'silhouette_score_params': ['full', 'kmeans', 0, True], 'davies_bouldin_score': 0.35758953358975354, 'davies_bouldin_params': ['full', 'kmeans', 0, True], 'calinski_harabasz_score': 661.8508504017345, 'calinski_harabasz_params': ['spherical', 'random', 0, True]}, 'Heirarchical Clustering': {'v_score': 0.7371828668056379, 'v_score_params': [8, 'euclidean', 'auto', 'ward'], 'silhouette_score': 0.6989255, 'silhouette_score_params': [5, 'euclidean', 'auto', 'complete'], 'davies_bouldin_score': 0.3156330987095233, 'davies_bouldin_params': [6, 'euclidean', 'auto', 'average'], 'calinski_harabasz_score': 661.8508504017345, 'calinski_harabasz_params': [7, 'euclidean', 'auto', 'complete']}, 'Louvain': {'v_score': 0.6057236202811282, 'v_score_params': [1.4000000000000001, True, 'Dugue'], 'silhouette_score': 0.34213462, 'silhouette_score_params': [0.9999999999999999, True, 'Dugue'], 'davies_bouldin_score': 0.48582431346452837, 'davies_bouldin_params': [2.2000000000000006, True, 'Potts'], 'calinski_harabasz_score': 65.7409937916018, 'calinski_harabasz_params': [0.9999999999999999, True, 'Dugue']}}}
+pca_df = pd.DataFrame.from_dict(pca_results)
+umap_df = pd.DataFrame.from_dict(umap_results)
+
+plots()
