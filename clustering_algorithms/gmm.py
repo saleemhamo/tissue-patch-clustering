@@ -3,65 +3,56 @@ from sklearn.metrics import silhouette_score, v_measure_score
 
 
 """
+import numpy as np
 import h5py
-from sklearn.decomposition import PCA
-import umap
-from sklearn.mixture import GaussianMixture
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.mixture import GaussianMixture
+from sklearn.metrics import silhouette_score
+from umap import UMAP
 
-def load_data(file_path, dataset_key):
-    with h5py.File(file_path, 'r') as f:
-        data = f[dataset_key][:]
-    return data
+def read_data_from_hdf5(file_path):
+    with h5py.File(file_path, 'r') as file:
+        umap_features = np.array(file['umap_feature'])
+        pca_features = np.array(file['pca_feature'])
+        filenames = np.array(file['file_name'])
+    
+    return umap_features, pca_features, filenames
 
-def apply_pca(data, n_components=100):
-    pca = PCA(n_components=n_components)
-    pca_data = pca.fit_transform(data)
-    return pca_data
+def apply_gmm_and_evaluate(data, algorithm_params):
+    gmm = GaussianMixture(**algorithm_params)
+    cluster_labels = gmm.fit_predict(data)
+    
+    silhouette = silhouette_score(data, cluster_labels)
+    
+    return silhouette, cluster_labels
 
-def apply_umap(data, n_components=100):
-    umap_model = umap.UMAP(n_components=n_components)
-    umap_data = umap_model.fit_transform(data)
-    return umap_data
+# Iteration
+datasets = ["pathologygan_data.h5", "resnet50_data.h5"]
+highest_silhouette_scores = {}
 
-def perform_gmm_clustering(data, n_components=3):
-    gmm = GaussianMixture(n_components=n_components, random_state=0)
-    gmm.fit(data)
-    labels = gmm.predict(data)
-    return labels
+for dataset in datasets:
+    file_path = dataset
+    umap_features, pca_features, filenames = read_data_from_hdf5(file_path)
+    dataset_silhouette_scores = []
+    
+    for representation, features in zip(["UMAP", "PCA"], [umap_features, pca_features]):
+        silhouette, cluster_labels = apply_gmm_and_evaluate(features, algorithm_params)
+        
+        print(f"Dataset: {dataset}, Representation: {representation}")
+        print(f"Silhouette Score: {silhouette}")
+        
+        dataset_silhouette_scores.append(silhouette)
+        
+        plt.scatter(features[:, 0], features[:, 1], c=cluster_labels, cmap='viridis', alpha=0.5)
+        plt.title(f'Clusters - {dataset}, {representation}')
+        plt.show()
+    
+    highest_silhouette_scores[dataset] = max(dataset_silhouette_scores)
 
-def visualize_clusters(data, labels, title):
-    plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis')
-    plt.colorbar()
-    plt.title(title)
-    plt.show()
-
-# Load Data
-pathologygan_data_pca= load_data('pathologygan_data.h5', 'pca_feature')
-resnet50_data_pca = load_data('resnet50_data.h5', 'pca_feature')
-pathologygan_data_umap= load_data('pathologygan_data.h5', 'umap_feature')
-resnet50_data_umap = load_data('resnet50_data.h5', 'umap_feature')
-
-# Apply PCA
-pathologygan_pca_data = apply_pca(pathologygan_data_pca)
-resnet50_pca_data = apply_pca(resnet50_data_pca)
-
-# Apply UMAP
-pathologygan_umap_data = apply_umap(pathologygan_data_umap)
-resnet50_umap_data = apply_umap(resnet50_data_umap)
-
-# Perform GMM Clustering
-pathologygan_pca_labels = perform_gmm_clustering(pathologygan_pca_data)
-pathologygan_umap_labels = perform_gmm_clustering(pathologygan_umap_data)
-resnet50_pca_labels = perform_gmm_clustering(resnet50_pca_data)
-resnet50_umap_labels = perform_gmm_clustering(resnet50_umap_data)
-
-# Visualize Clusters
-visualize_clusters(pathologygan_pca_data, pathologygan_pca_labels, 'PathologyGAN PCA Clustering')
-visualize_clusters(pathologygan_umap_data, pathologygan_umap_labels, 'PathologyGAN UMAP Clustering')
-visualize_clusters(resnet50_pca_data, resnet50_pca_labels, 'ResNet50 PCA Clustering')
-visualize_clusters(resnet50_umap_data, resnet50_umap_labels, 'ResNet50 UMAP Clustering')
-
+print("Highest Silhouette Scores:")
+print(highest_silhouette_scores)
 
 
 """
