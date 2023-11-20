@@ -1,7 +1,6 @@
 import numpy as np
 import plotly.graph_objects as go
 
-import data
 from clustering_algorithms.gmm import apply_gmm
 from clustering_algorithms.hierarchical_clustering import apply_hierarchical_clustering
 from clustering_algorithms.kmeans import apply_kmeans
@@ -9,8 +8,7 @@ from clustering_algorithms.louvain import apply_louvain
 from data import TissuesData
 import matplotlib.pyplot as plt
 import data as data_management
-import pandas as pd
-import evaluation
+
 
 """
     Data Representation (representations): 'pge', 'resnet50', 'inceptionv3', 'vgg16'

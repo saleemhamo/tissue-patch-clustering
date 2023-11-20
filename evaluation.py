@@ -1,18 +1,23 @@
-from sklearn.metrics import silhouette_score, v_measure_score
+from sklearn.metrics import silhouette_score, v_measure_score, davies_bouldin_score, calinski_harabasz_score
 
 """
 
 """
+def best_params(scores, parameters):
+    return [max(scores), parameters[scores.index(max(scores))]]
+def best_db_scores_and_params(scores,parameters):
+    return [min(scores), parameters[scores.index(min(scores))]]
+def find_silhouette_score(test_data, pred_labels):
+    return silhouette_score(test_data, pred_labels)
 
+def find_v_measure(test_label, pred_labels):
+    return v_measure_score(test_label, pred_labels)
 
-def find_silhouette_score(test_data, assignment):
-    silhouette = silhouette_score(test_data, assignment)
-    return silhouette
+def find_davies_bouldin_score(test_data, pred_labels):
+    return davies_bouldin_score(test_data, pred_labels)
 
-
-def find_v_measure(test_label, assignment):
-    v_measure = v_measure_score(test_label, assignment)
-    return v_measure
+def find_calinski_harabasz_score(test_data, pred_labels):
+    return calinski_harabasz_score(test_data, pred_labels)
 
 # kmeans_v_measure = v_measure_score(test_label, kmeans_assignment)
 # louvain_v_measure = v_measure_score(test_label, louvain_assignment)

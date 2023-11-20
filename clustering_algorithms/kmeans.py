@@ -1,25 +1,50 @@
-from sklearn.ensemble import RandomForestClassifier
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score
-from sklearn.metrics import f1_score, silhouette_score, v_measure_score
-from sklearn.model_selection import train_test_split, cross_val_score
+import evaluation
 
 def apply_kmeans(test_data, test_label):
     print("Kmeans")
+    parameters = []
+    silhouette_scores = []
+    v_scores = []
+    db_scores = []
+    ch_scores = []
+    init = ['k-means++','random']
+    copy_x = [True, False]
+    algorithm = ['lloyd', 'elkan']
     k = 9
-    X_train, X_test, y_train, y_test = train_test_split(test_data, test_label, test_size=.1, random_state=4)
-    kmeans = KMeans(n_clusters=k, random_state=42, n_init='auto')
-    kmeans.fit(X_train)
-    pred = kmeans.predict(X_test)
-    v_score = v_measure_score(y_test, pred)
-    sil_score = silhouette_score(X_test, y_test)
+    for init_ in init:
+        for copy in copy_x:
+            for alg in algorithm:
+                pred_labels = KMeans(n_clusters=k,
+                                    random_state=42,
+                                    n_init='auto',
+                                    init= init_,
+                                    copy_x=copy,
+                                    algorithm=alg).fit_predict(test_data)
 
+                silhouette_scores.append(evaluation.silhouette_score(test_data, pred_labels))
+                v_scores.append(evaluation.v_measure_score(test_label, pred_labels))
+                ch_scores.append(evaluation.find_calinski_harabasz_score(test_data, pred_labels))
+                db_scores.append(evaluation.find_davies_bouldin_score(test_data, pred_labels))
 
+                parameters.append([k, 42, 'auto', init_, copy, alg])
 
+    v_score_and_params = evaluation.best_params(v_scores, parameters)
+    sil_scores_and_params = evaluation.best_params(silhouette_scores, parameters)
+    db_scores_and_params = evaluation.best_db_scores_and_params(db_scores, parameters)
+    ch_scores_and_params = evaluation.best_params(ch_scores, parameters)
+
+    results = {
+        "v_score": v_score_and_params[0],
+        "v_score_params": v_score_and_params[1],
+        "silhouette_score": sil_scores_and_params[0],
+        "silhouette_score_params": sil_scores_and_params[1],
+        "davies_bouldin_score": db_scores_and_params[0],
+        "davies_bouldin_params": db_scores_and_params[1],
+        "calinski_harabasz_score": ch_scores_and_params[0],
+        "calinski_harabasz_params": ch_scores_and_params[1]
+    }
+    return results
 
     # cv_scores = []
     # v_scores = []
@@ -59,18 +84,4 @@ def apply_kmeans(test_data, test_label):
     # print(f'The best k value is {best_k}.')
 
 
-    # highest_v_score = max(v_scores)
-    v_parms = [k]
 
-    # highest_sil_score = max(silhouette_scores)
-    # highest_sil_score_index = silhouette_scores.index(highest_sil_score)
-    s_parms = [k]
-
-    results = {
-        "v_score": v_score,
-        "v_score_params": v_parms,
-        "silhouette_score": sil_score,
-        "silhouette_score_params": s_parms
-    }
-    print('done KMeans')
-    return results
