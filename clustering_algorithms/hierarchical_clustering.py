@@ -2,11 +2,6 @@ import numpy as np
 from sklearn.cluster import AgglomerativeClustering
 import evaluation
 
-"""
-
-
-"""
-
 
 def apply_hierarchical_clustering(test_data, test_label):
     print("HC")

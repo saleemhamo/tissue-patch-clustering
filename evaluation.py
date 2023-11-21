@@ -1,7 +1,7 @@
 from sklearn.metrics import silhouette_score, v_measure_score, davies_bouldin_score, calinski_harabasz_score
 
 """
-
+small functions that return the various scores and parameters for the performance of the clustering algorithms
 """
 def best_params(scores, parameters):
     return [max(scores), parameters[scores.index(max(scores))]]
@@ -19,6 +19,8 @@ def find_davies_bouldin_score(test_data, pred_labels):
 def find_calinski_harabasz_score(test_data, pred_labels):
     return calinski_harabasz_score(test_data, pred_labels)
 
+# I think the following was used in the initial commit
+# -------------------------------------------------------------------------------------------------------------
 # kmeans_v_measure = v_measure_score(test_label, kmeans_assignment)
 # louvain_v_measure = v_measure_score(test_label, louvain_assignment)
 # pd.DataFrame({
